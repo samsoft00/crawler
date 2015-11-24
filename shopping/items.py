@@ -14,10 +14,13 @@ class ShoppingItem(scrapy.Item):
     pass
 
 
-class KongaItem(scrapy.Item):
+class ProductItem(scrapy.Item):
 		"""docstring for KongaItem"""
 		product_name = scrapy.Field()
 		product_img = scrapy.Field()
 		product_price = scrapy.Field()
 		product_url = scrapy.Field()
+		product_brand = scrapy.Field()
 		product_details = scrapy.Field()
+		product_category = scrapy.Field()
+		product_site = scrapy.Field();

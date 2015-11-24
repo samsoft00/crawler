@@ -33,13 +33,37 @@ class ShoppingPipeline(object):
 					raise DropItem("Missing {0}".format(data))
 			if valid:
 				try:
-					ShoppingDb.create(name=item['product_name'],url=item['product_url'],img=item['product_img'],price=item['product_price'],details=item['product_details'])
+					proDetails = ""
+					pro_details = item['product_details']
+
+					#Check if product details is a list
+					if type(pro_details) is list:
+						proDetails = '\n '.join(detail for detail in pro_details)
+						# for d in pro_details:
+						# 	proDetails+= "\n"+d.strip()
+					else:
+						proDetails+= pro_details
+
+
+					ShoppingDb.create(
+						name=item['product_name'].strip(),
+						url=item['product_url'], 
+						brand=item['product_brand'][0].strip(), 
+						img=item['product_img'],
+						price=item['product_price'],
+						category=item['product_category'].strip(),
+						site=item['product_site'],
+						details=proDetails)
+
 				except IntegrityError:
 					existingData = ShoppingDb.get(url=item['product_url'])
-					existingData.name = item['product_name']
+					existingData.name = item['product_name'].strip()
+					existingData.brand = item['product_brand'][0].strip()
 					existingData.img = item['product_img']
 					existingData.price = item['product_price']
-					existingData.details = item['product_details']
+					existingData.category = item['product_category'].strip()
+					existingData.site = item['product_site']
+					existingData.details = proDetails#item['product_details']
 					existingData.save()
 
 			return item
@@ -48,9 +72,12 @@ class ShoppingPipeline(object):
 class ShoppingDb(Model):
 		name = TextField()
 		url = CharField(max_length=150, unique=True)
+		brand = TextField()
 		img = CharField(max_length=200)
 		price = CharField(max_length=50)
-		details = CharField(max_length=255)
+		category = CharField(max_length=100)
+		site = CharField(max_length=50)
+		details = TextField()
 		timestamp = DateTimeField(default=datetime.datetime.now)
 
 		class Meta:
